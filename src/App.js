@@ -2,51 +2,119 @@
 import React, { Component } from 'react'
 import mapStyle from './mapStyles';
 import './App.css';
-//import { GoogleMap, withScriptjs, withGoogleMap, Marker, InfoWindow } from 'react-google-maps';
+
+
+
+
+
+
+
+
+
+
+
+
+import { GoogleMap, withScriptjs, withGoogleMap, Marker, InfoWindow } from 'react-google-maps';
 
 
 
 class App extends Component {
 
+  constructor(props){
+    super(props)
+    this.state = {
+      map:'',
+      markers: [],
+    }
+  }
+/*****************************************/
   componentDidMount(){
     this.renderMap();
   }
-
+/*****************************************/
   renderMap=()=>{
     loadScript(`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_KEY}&callback=initMap`);
     window.initMap = this.initMap;
   }
+/*****************************************/
+  addMarker = (location,info) => {
+    var marker = new window.google.maps.Marker({
+      position: location,
+      map: this.state.map
+    });
+    let infowindow = new window.google.maps.InfoWindow({
+      content: `<div>${info}</div>`
+    })
+    marker.addListener('mouseover',function(){
+      infowindow.open(this.map,marker);
+    })
 
+    marker.addListener('mouseout',function(){
+      infowindow.close();
+    })
+
+    let markersCopy = [...this.state.markers] 
+
+    markersCopy.push(marker);
+
+    this.setState({
+      markers:markersCopy
+    })
+  
+  }
+/*****************************************/
   initMap = () =>  {
     var myLatlng = {lat:26.6406,lng:-81.8723}
       let map = new window.google.maps.Map(document.getElementById('map'), {
         center: myLatlng,
         zoom: 8,
         styles: mapStyle,
+        disableDoubleClickZoom: true,
       });
-
-      let marker = new window.google.maps.Marker({
-        position:myLatlng,
+      this.setState({
         map:map,
-        title:'Hello World'
+      })
+
+      map.addListener('dblclick', (event)=> {
+        this.addMarker(event.latLng,'this is a test');
       });
 
-      let infowindow = new window.google.maps.InfoWindow({
-        content: "<div> <h1>Aqui vive mi culito rubio </h1> </div>"
-      })
-      marker.addListener('click',function(){
-        infowindow.open(map,marker);
-      })
+      // let marker = new window.google.maps.Marker({
+      //   position:myLatlng,
+      //   map:map,
+      //   title:'Hello World'
+      // });
 
-
-      marker.setMap(map);
+      // let infowindow = new window.google.maps.InfoWindow({
+      //   content: "<div>Test</div>"
+      // })
+      // marker.addListener('mouseover',function(){
+      //   infowindow.open(map,marker);
+      // })
+      // marker.setMap(map);
     }
+/*********************************************************************/
+
+
+setMapOnAll = (map) => {
+  for (var i = 0; i < this.markers.length; i++) {
+    this.markers[i].setMap(map);
+  }
+}
+
+
+showMarkers = () => {
+  this.setMapOnAll(this.state.map);
+}
 
   render() {
     return (
+      <div>
+
       <main>
         <div id="map"></div>
       </main>
+      </div>
     )
   }
 }
