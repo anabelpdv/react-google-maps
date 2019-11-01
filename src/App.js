@@ -4,10 +4,11 @@ import React, { Component } from 'react'
 import './App.css';
 import Map from './components/Map'
 
+import { Switch, Route, NavLink } from "react-router-dom";
 
 class App extends Component {
 
- loadScript = (url)=>{
+loadScript = (url)=>{
     let index = window.document.getElementsByTagName('script')[0];
     let script = window.document.createElement('script');
     script.src = url;
@@ -16,12 +17,16 @@ class App extends Component {
     index.parentNode.insertBefore(script,index);
   }
   
-
   render() {
     return (
       <div>
+        {/* <nav>
+            <NavLink to="/"> Map </NavLink>
+        </nav> */}
 
-      <Map loadScript={this.loadScript} ></Map>
+        <Switch>
+        <Route exact path="/" render={()=><Map loadScript={this.loadScript}/> }   /> 
+        </Switch>
       </div>
     )
   }

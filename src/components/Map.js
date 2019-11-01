@@ -50,7 +50,7 @@ export default class Map extends Component {
     var myLatlng = {lat:26.6406,lng:-81.8723}
       let map = new window.google.maps.Map(document.getElementById('map'), {
         center: myLatlng,
-        zoom: 8,
+        zoom: 9,
         styles: mapStyle,
         disableDoubleClickZoom: true,
       });
@@ -62,19 +62,6 @@ export default class Map extends Component {
         this.addMarker(event.latLng,'this is a test');
       });
 
-      // let marker = new window.google.maps.Marker({
-      //   position:myLatlng,
-      //   map:map,
-      //   title:'Hello World'
-      // });
-
-      // let infowindow = new window.google.maps.InfoWindow({
-      //   content: "<div>Test</div>"
-      // })
-      // marker.addListener('mouseover',function(){
-      //   infowindow.open(map,marker);
-      // })
-      // marker.setMap(map);
     }
 /*********************************************************************/
 
@@ -89,11 +76,6 @@ setMapOnAll = (map) => {
 showMarkers = () => {
   this.setMapOnAll(this.state.map);
 }
-
-
-
-
-
 
 
 
