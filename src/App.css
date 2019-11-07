@@ -2,9 +2,6 @@
   text-align: center;
 }
 
-#map {
-  height: 100vh;
-}
 /* Optional: Makes the sample page fill the window. */
 html, body {
   height: 100%;

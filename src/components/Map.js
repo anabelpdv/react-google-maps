@@ -1,92 +1,56 @@
-import React, { Component } from 'react'
-import mapStyle from '../mapStyles';
-
-export default class Map extends Component {
-
-  constructor(props){
-    super(props)
-    this.state = {
-      map:'',
-      markers: [],
-    }
-  }
-/*****************************************/
-  componentDidMount(){
-    this.renderMap();
-  }
-/*****************************************/
-  renderMap=()=>{
-    this.props.loadScript(`https://maps.googleapis.com/maps/api/js?key=${process.env.REACT_APP_GOOGLE_KEY}&callback=initMap`);
-    window.initMap = this.initMap;
-  }
-/*****************************************/
-  addMarker = (location,info) => {
-    var marker = new window.google.maps.Marker({
-      position: location,
-      map: this.state.map
-    });
-    let infowindow = new window.google.maps.InfoWindow({
-      content: `<div> <button>Submit</button>${info}</div>`
-    })
-    marker.addListener('mouseover',function(){
-      infowindow.open(this.map,marker);
-    })
-
-    marker.addListener('mouseout',function(){
-      infowindow.close();
-    })
-
-    let markersCopy = [...this.state.markers] 
-
-    markersCopy.push(marker);
-
-    this.setState({
-      markers:markersCopy
-    })
-  
-  }
-/*****************************************/
-  initMap = () =>  {
-    var myLatlng = {lat:26.6406,lng:-81.8723}
-      let map = new window.google.maps.Map(document.getElementById('map'), {
-        center: myLatlng,
-        zoom: 9,
-        styles: mapStyle,
-        disableDoubleClickZoom: true,
-      });
-      this.setState({
-        map:map,
-      })
-
-      map.addListener('dblclick', (event)=> {
-        this.addMarker(event.latLng,'this is a test');
-      });
-
-    }
-/*********************************************************************/
+import React,{useState} from "react";
+import {
+  withGoogleMap,
+  withScriptjs,
+  GoogleMap,
+  Marker,
+  InfoWindow
+} from "react-google-maps";
+import mapStyles from "../mapStyles";
+import  parksData from "../data/skateboard-parks.js";
 
 
-setMapOnAll = (map) => {
-  for (var i = 0; i < this.markers.length; i++) {
-    this.markers[i].setMap(map);
-  }
+function Map() {
+  const [selectedPark, setSelectedPark] = useState(null);
+  return (
+    <GoogleMap
+      defaultZoom={10}
+      defaultCenter={{ lat: 45.4211, lng: -75.6903 }}
+      defaultOptions={{ styles: mapStyles, disableDoubleClickZoom: true }}
+      onDblClick={(e)=>console.log('This is the event', e.latLng.lat())}
+    >
+    {parksData.map(park=>(
+    <Marker 
+      key={park.properties.PARK_ID}
+      position = {{ 
+        lat: park.geometry.coordinates[1],
+        lng: park.geometry.coordinates[0] }}
+        onClick={()=>{
+          setSelectedPark(park);
+        }}
+    /> 
+    ))}
+  {selectedPark && (
+      <InfoWindow
+        position = {{ 
+          lat: selectedPark.geometry.coordinates[1],
+          lng: selectedPark.geometry.coordinates[0] }}
+          onCloseClick={()=>{
+          setSelectedPark(null);
+        }}
+        >
+        <div>
+          <h1>{selectedPark.properties.NAME}</h1>
+          <h4>{selectedPark.properties.NAME}</h4>
+
+        </div>
+        </InfoWindow>
+    )} 
+   
+    </GoogleMap>
+  );
 }
 
+const MapWrapped = withScriptjs(withGoogleMap(Map));
 
-showMarkers = () => {
-  this.setMapOnAll(this.state.map);
-}
-
-
-
-
-  render() {
-    return (
-      <main>
-        <div id="map"></div>
-      </main>
-    )
-  }
-}
-
-
+export default MapWrapped;

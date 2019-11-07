@@ -1,37 +1,28 @@
-//import React, { useState }from 'react';
-import React, { Component } from 'react'
+import React from "react";
+import {
+  withGoogleMap,
+  withScriptjs,
+  GoogleMap,
+  Marker,
+  InfoWindow
+} from "react-google-maps";
 
-import './App.css';
-import Map from './components/Map'
+import MapWrapped from './components/Map'
 
-import { Switch, Route, NavLink } from "react-router-dom";
 
-class App extends Component {
+export default function App() {
 
-loadScript = (url)=>{
-    let index = window.document.getElementsByTagName('script')[0];
-    let script = window.document.createElement('script');
-    script.src = url;
-    script.async = true;
-    script.defer = true;
-    index.parentNode.insertBefore(script,index);
-  }
-  
-  render() {
-    return (
-      <div>
-        {/* <nav>
-            <NavLink to="/"> Map </NavLink>
-        </nav> */}
 
-        <Switch>
-        <Route exact path="/" render={()=><Map loadScript={this.loadScript}/> }   /> 
-        </Switch>
-      </div>
-    )
-  }
+  return (
+    <div style={{ width: "100vw", height: "100vh" }}>
+      <MapWrapped
+        googleMapURL={`https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places&key=${
+          process.env.REACT_APP_GOOGLE_KEY
+        }`}
+        loadingElement={<div style={{ height: `100%` }} />}
+        containerElement={<div style={{ height: `100%` }} />}
+        mapElement={<div style={{ height: `100%` }} />}
+      />
+    </div>
+  );
 }
-
-
-export default App;
-
